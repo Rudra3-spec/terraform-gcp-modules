@@ -1,30 +1,17 @@
+
 variable "project_id" {
   description = "GCP Project ID"
   type        = string
 }
 
-variable "zone" {
-  description = "GCP Zone"
-  type        = string
-}
+variable "vms" {
+  description = "List of VMs to create"
 
-variable "machine_type" {
-  description = "VM Machine Type"
-  type        = string
-}
-variable "subnetwork" {
-  description = "GCP Subnetwork"
-  type        = string
-}
-variable "vm_name" {
-  description = "Name of the Compute Engine VM"
-  type        = string
-}
-variable "vm_name_2" {
-  description = "Name of the second Compute Engine VM"
-  type        = string
-}
-variable "service_account_email" {
-  description = "Service account email for the VM"
-  type        = string
+  type = list(object({
+    name                  = string
+    machine_type          = string
+    zone                  = string
+    subnetwork            = string
+    service_account_email = optional(string)
+  }))
 }

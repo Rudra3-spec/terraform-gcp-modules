@@ -1,9 +1,13 @@
 
-resource "google_compute_instance" "my_vm" {
+resource "google_compute_instance" "vm" {
+  for_each = {
+    for vm in var.vms : vm.name => vm
+  }
+
   project      = var.project_id
-  name         = var.vm_name
-  machine_type = var.machine_type
-  zone         = var.zone
+  name         = each.value.name
+  machine_type = each.value.machine_type
+  zone         = each.value.zone
 
   tags = ["allow-iap-ssh"]
 
@@ -14,33 +18,16 @@ resource "google_compute_instance" "my_vm" {
   }
 
   network_interface {
-    subnetwork = var.subnetwork
+    subnetwork = each.value.subnetwork
     access_config {}
   }
 
-  service_account {
-    email  = var.service_account_email
-    scopes = ["cloud-platform"]
-  }
-}
+  dynamic "service_account" {
+    for_each = each.value.service_account_email == null ? [] : [1]
 
-resource "google_compute_instance" "my_vm_2" {
-  project      = var.project_id
-  name         = var.vm_name_2
-  machine_type = var.machine_type
-  zone         = var.zone
-
-  tags = ["allow-iap-ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-12"
+    content {
+      email  = each.value.service_account_email
+      scopes = ["cloud-platform"]
     }
   }
-
-  network_interface {
-    subnetwork = var.subnetwork
-    access_config {}
-  }
 }
-
