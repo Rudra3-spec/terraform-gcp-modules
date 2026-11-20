@@ -1,4 +1,3 @@
-
 resource "google_compute_instance" "vm" {
   for_each = {
     for vm in var.vms : vm.name => vm
@@ -18,13 +17,12 @@ resource "google_compute_instance" "vm" {
   }
 
   network_interface {
-    subnetwork = each.value.subnetwork
+    subnetwork = var.subnetwork
     access_config {}
   }
 
   dynamic "service_account" {
     for_each = each.value.service_account_email == null ? [] : [1]
-
     content {
       email  = each.value.service_account_email
       scopes = ["cloud-platform"]

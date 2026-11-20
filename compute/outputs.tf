@@ -1,4 +1,3 @@
-
 output "vm_names" {
   value = {
     for name, vm in google_compute_instance.vm : name => vm.name
